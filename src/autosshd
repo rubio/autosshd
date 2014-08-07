@@ -1,0 +1,102 @@
+#! /bin/bash
+
+# /usr/bin/autossh -M20000:7 -f -nNTx -i /home/pandora/.ssh/id_rsa -p 22    -L 127.0.19.1:5666:127.0.0.1:5666 -L 127.0.19.1:6381:10.0.15.2:6381 pandora@lars.yuilop.net
+
+DIRCONF=prueba.d
+EXTCONF=tun
+FILES=$(ls ${DIRCONF}/*.${EXTCONF})
+
+# -- Funcs to be used by tun files --
+setLocalUser() {
+}
+
+setRemoteUser() {
+}
+
+setSSHKey() {
+    SShKey=${1:-"~/.ssh/id_rsa"}
+}
+
+setSSHPort() {
+}
+
+setSSHUser() {
+}
+
+setSSHHost() {
+}
+
+setLocalIP() {
+}
+
+setLocalPort() {
+}
+
+setRemoteIP() {
+}
+
+setRemotePort() {
+}
+
+function addLocalRule() {
+	v="-L:${LocIP}:${LocPort}:${RemIP}:${RemPort}"
+}
+function addRemoteRule() {
+	v="-R:${LocIP}:${LocPort}:${RemIP}:${RemPort}"
+}
+
+# -- Private function --
+function do_start () {
+  echo
+}
+
+function do_stop () {
+	echo
+}
+
+function do_status () {
+echo
+}
+
+function do_list () {
+echo
+}
+
+function do_help () {
+echo  help
+}
+
+OPERATION=${1:-help}
+
+if [ $# -ge 2 ]; then
+	while [ $# -ge 2 ]; do
+		FILE=${DIRCONF}/${2}.${EXTCONF}
+		if [ -f $FILE ]; then
+			SFILES="$SFILES $FILE"
+                else
+			echo "File ${FILE} NOT found"
+			exit 2
+                fi
+		shift
+	done
+else
+	SFILES=$FILES
+fi
+FILES=$SFILES
+
+case "$OPERATION" in
+	start)
+		do_start $FILES
+		;;
+	stop)
+		do_stop $FILES
+		;;
+	list)
+		do_list
+		;;
+	status)
+		do_status $FILES
+		;;
+	*)
+		o_help
+esac
