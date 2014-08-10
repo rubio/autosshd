@@ -2,43 +2,58 @@
 
 # /usr/bin/autossh -M20000:7 -f -nNTx -i /home/pandora/.ssh/id_rsa -p 22    -L 127.0.19.1:5666:127.0.0.1:5666 -L 127.0.19.1:6381:10.0.15.2:6381 pandora@lars.yuilop.net
 
+# TODO: Use /etc/default/autosshd
 DIRCONF=prueba.d
 EXTCONF=tun
 FILES=$(ls ${DIRCONF}/*.${EXTCONF})
 
 # -- Funcs to be used by tun files --
 setLocalUser() {
+    LocalUser=${1:-root}
 }
 
 setRemoteUser() {
+    RemoteUser=${1:-${LocalUser}}
 }
 
 setSSHKey() {
-    SShKey=${1:-"~/.ssh/id_rsa"}
+    # Check if LocalUser is defined
+    home_user=$(getent $LocalUser | cut -d: -f6)
+    SShKey=${1:-"${home_user}/.ssh/id_rsa"}
 }
 
 setSSHPort() {
+    SShPort=${1:-22}
 }
 
 setSSHUser() {
+    # Check if LocalUser is defined
+    SShUser=${1:-${LocalUser}}
 }
 
 setSSHHost() {
+    SShHost=${1:?"We need a Host to where ssh"}
 }
 
 setLocalIP() {
+    SShLocalIP=${1:-"127.0.0.1"}
 }
 
 setLocalPort() {
+    SShLocalPort=${1:?"We need a local port"}
 }
 
 setRemoteIP() {
+    SShRemoteIP=${1:-"127.0.0.1"}
 }
 
 setRemotePort() {
+    # Check if LocalPort is defined
+    SShRemotePort=${1:-${SShLocalPort}}
 }
 
 function addLocalRule() {
+    # TODO: Fix references to variables
 	v="-L:${LocIP}:${LocPort}:${RemIP}:${RemPort}"
 }
 function addRemoteRule() {
@@ -73,10 +88,10 @@ if [ $# -ge 2 ]; then
 		FILE=${DIRCONF}/${2}.${EXTCONF}
 		if [ -f $FILE ]; then
 			SFILES="$SFILES $FILE"
-                else
+        else
 			echo "File ${FILE} NOT found"
 			exit 2
-                fi
+        fi
 		shift
 	done
 else
